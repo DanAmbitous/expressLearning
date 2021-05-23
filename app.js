@@ -3,7 +3,8 @@ const app = express()
 const PORT = process.env.PORT || 9886
 const body = require('body-parser')
 const { response } = require('express')
- 
+const fs = require('fs') 
+
 app.use(express.static('public'))
 app.use(express.json())
 
@@ -19,14 +20,26 @@ Goals
 
 */
 
+let geoLocationArray = []
+
 app.post('/api', (req, res) => {
   console.log((req.body))
+
+  fs.appendFile("geoLocationData.txt",  JSON.stringify(geoLocationArray),function(err){
+    if(err) throw err;
+    console.log('IS WRITTEN')
+  });
+
+  geoLocationArray.push(req.body)
+  console.log(geoLocationArray)
   res.json({
     status: 'Success',
     latitude: req.body.latitude,
     longitude: req.body.longitude
   })
 })
+
+
 
 /* 
 
