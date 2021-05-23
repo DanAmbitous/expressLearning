@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Index HTML</title>
+</head>
+<body>
+  <h1>Hello World</h1>
+
+  <a href="http://localhost:9886/indexSecond.html">Second Page</a>
+  <a href="http://localhost:9886/sub-directory/indexThird.html">Third Page</a>
+
+  <p><span id="latitude"></span>°</p>
+  <p><span id="longitude"></span>°</p>
+
+  <script>
+    if('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(async position => {
+        const latitude = position.coords.latitude
+        const longitude = position.coords.longitude
+
+        document.querySelector('#latitude').textContent = position.coords.latitude
+        document.querySelector('#longitude').textContent = position.coords.longitude
+
+        const data = { latitude, longitude }
+        const options = {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        }
+        const response = await fetch('/api', options)
+        const jsonData = await response.json()
+        console.log(jsonData)
+      })
+    } else {
+      console.log('Geolocation API is not avaliable')
+    }
+  </script>
+</body>
+</html>
