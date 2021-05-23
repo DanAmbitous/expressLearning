@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 9886
 const body = require('body-parser')
 const { response } = require('express')
 const fs = require('fs') 
+const Datastore = require('nedb')
 
 app.use(express.static('public'))
 app.use(express.json())
@@ -20,26 +21,41 @@ Goals
 
 */
 
-let geoLocationArray = []
+const geoLocationArray = []
 
-app.post('/api', (req, res) => {
-  console.log((req.body))
+const database = new Datastore('database.db')
+// It's going to load database.db created if doesn't exist
+database.loadDatabase()
 
-  fs.appendFile("geoLocationData.txt",  JSON.stringify(geoLocationArray),function(err){
-    if(err) throw err;
-    console.log('IS WRITTEN')
-  });
+app.get('/api', (req, res) => {
+  database.find({}, (error, data) => {
+    if (error) {
+      res.send(error)
+    }
 
-  geoLocationArray.push(req.body)
-  console.log(geoLocationArray)
-  res.json({
-    status: 'Success',
-    latitude: req.body.latitude,
-    longitude: req.body.longitude
+    res.json(data)
   })
 })
 
+app.post('/api', (req, res) => {
+  console.log(req.body)
 
+  // fs.appendFile("geoLocationData.txt",  JSON.stringify(geoLocationArray),function(err){
+  //   if(err) throw err;
+  //   console.log('IS WRITTEN')
+  // });
+
+  database.insert(req.body)
+  // geoLocationArray.push(req.body)
+  // console.log(geoLocationArray)
+  res.json({
+    status: 'Success',
+    latitude: req.body.latitude,
+    longitude: req.body.longitude,
+    date: req.body.date,
+    name: req.body.name
+  })
+})
 
 /* 
 

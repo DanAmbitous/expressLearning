@@ -15,27 +15,51 @@
   <p><span id="latitude"></span>°</p>
   <p><span id="longitude"></span>°</p>
 
+  <input type="text" id="name" placeholder="Enter your name here">
+
+  <button id="submit">Submit</button>
+
+  <div id="geolocation-data">
+
+  </div>
+
   <script>
     if('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(async position => {
-        const latitude = position.coords.latitude
-        const longitude = position.coords.longitude
+      document.addEventListener('click', event => {
+        const element = event.target.id
 
-        document.querySelector('#latitude').textContent = position.coords.latitude
-        document.querySelector('#longitude').textContent = position.coords.longitude
-
-        const data = { latitude, longitude }
-        const options = {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
+        switch (element) {
+          case 'submit':
+            getLocation()
+            break
         }
-        const response = await fetch('/api', options)
-        const jsonData = await response.json()
-        console.log(jsonData)
       })
+
+      function getLocation() {
+        navigator.geolocation.getCurrentPosition(async position => {
+          const latitude = position.coords.latitude
+          const longitude = position.coords.longitude
+          const date = Date.now()
+          const name = document.querySelector('#name').value
+
+          document.querySelector('#latitude').textContent = position.coords.latitude
+          document.querySelector('#longitude').textContent = position.coords.longitude
+
+          const data = { latitude, longitude, date, name }
+          const options = {
+            method: 'POST',
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+          }
+          const response = await fetch('/api', options)
+          const jsonData = await response.json()
+          console.log(jsonData)
+
+          document.querySelector('#geolocation-data').append(JSON.stringify(jsonData))
+        })   
+      }
     } else {
       console.log('Geolocation API is not avaliable')
     }

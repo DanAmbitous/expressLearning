@@ -11,5 +11,15 @@
 
   <a href="http://localhost:9886/">First Page</a>
   <a href="http://localhost:9886/sub-directory/indexThird.html">Third Page</a>
+
+  <script>
+    async function getData() {
+      const response = await fetch('/api')
+      const data = await response.json()
+      console.log(data)
+    }
+
+    getData()
+  </script>
 </body>
 </html>
